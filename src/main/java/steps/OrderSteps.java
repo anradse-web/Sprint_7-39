@@ -10,8 +10,11 @@ import pojo.TrackId;
 
 import java.util.List;
 
+import static data.CourierData.BASE_URI;
 import static data.OrderData.*;
 import static io.restassured.RestAssured.given;
+import static org.apache.http.HttpStatus.SC_CREATED;
+import static org.apache.http.HttpStatus.SC_OK;
 
 public class OrderSteps {
 
@@ -19,7 +22,7 @@ public class OrderSteps {
         return given()
                 .log().ifValidationFails()  // логируем только при ошибках
                 .contentType(ContentType.JSON)
-                .baseUri(BASE_URI);
+                .baseUri( BASE_URI);
     }
 
     public static RequestSpecification requestSpecification() {
@@ -38,7 +41,7 @@ public class OrderSteps {
                 .body(request)
                 .post(ORDER_POST_CREATE)
                 .then()
-                .statusCode(201)  // валидируем статус-код
+                .statusCode(SC_CREATED)  // валидируем статус-код
                 .extract().response();  // извлекаем Response
     }
 
@@ -66,7 +69,7 @@ public class OrderSteps {
 
         return spec.get(ORDER_GET_LIST)  // используем константу из OrderData
                 .then()
-                .statusCode(200)  // валидируем статус-код
+                .statusCode(SC_OK)  // валидируем статус-код
                 .extract().response();  // извлекаем Response
     }
 
