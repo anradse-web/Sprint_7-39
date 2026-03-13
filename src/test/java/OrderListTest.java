@@ -12,6 +12,9 @@ import pojo.TrackId;
 import steps.OrderSteps;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.apache.http.HttpStatus.SC_CREATED;
+import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.hasSize;
 
@@ -32,7 +35,7 @@ import static org.hamcrest.Matchers.hasSize;
         for (int i = 0; i < DEFAULT_ORDERS_PER_PAGE; i++) {
             try {
                 Response response = orderSteps.orderCreate(List.of(COLOR_GREY));
-                if (response.statusCode() == 201) {
+                if (response.statusCode() == SC_CREATED) {
                     TrackId track = response.body().as(TrackId.class);
                     orderCreate.add(track);
                     System.out.println("Заказ создан, track: " + track.getTrack());
@@ -63,7 +66,7 @@ import static org.hamcrest.Matchers.hasSize;
 
             try {
                 ValidatableResponse response = orderSteps.cancel(track);
-                response.statusCode(200);
+                response.statusCode(SC_OK);
                 cancelledCount++;
                 System.out.println("Заказ " + track + " успешно отменён");
             } catch (AssertionError e) {
@@ -90,7 +93,7 @@ import static org.hamcrest.Matchers.hasSize;
             response.then()
                     .body("orders", Matchers.notNullValue())
                     .body("orders", hasSize(1))
-                    .statusCode(200);
+                    .statusCode(SC_OK);
         }
 
         @DisplayName("Список заказов без ограничения")
@@ -101,7 +104,7 @@ import static org.hamcrest.Matchers.hasSize;
             response.then()
                     .body("orders", notNullValue())
                     .body("orders", hasSize(DEFAULT_ORDERS_PER_PAGE))
-                    .statusCode(200);
+                    .statusCode(SC_OK);
         }
     }
 

@@ -9,6 +9,7 @@ import steps.OrderSteps;
 
 import java.util.List;
 
+import static org.apache.http.HttpStatus.SC_CREATED;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 
@@ -43,7 +44,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
         order = orderSteps.orderCreate(color);
         order
                 .then()
-                .statusCode(201)
+                .statusCode(SC_CREATED)
                 .body("track", instanceOf(Integer.class));
     }
 }

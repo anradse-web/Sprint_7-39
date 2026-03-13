@@ -7,6 +7,7 @@ import pojo.CourierModel;
 import steps.CourierSteps;
 import org.junit.Test;
 
+import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.isA;
@@ -31,7 +32,7 @@ public class CourierLoginTest extends BaseApiTest {
         createdCourierId = courierSteps.createCourier(courier)
                 .then()
                 .log().all()
-                .statusCode(201)
+                .statusCode(SC_CREATED)
                 .extract()
                 .body()
                 .path("id");
@@ -52,7 +53,7 @@ public class CourierLoginTest extends BaseApiTest {
         courierSteps.loginCourier(LOGIN, PASSWORD)
                 .then()
                 .log().all()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("id", instanceOf(Integer.class));
     }
 
@@ -64,7 +65,7 @@ public class CourierLoginTest extends BaseApiTest {
         courierSteps.loginCourier(null, PASSWORD)
                 .then()
                 .log().all()
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для входа"));
     }
 
@@ -75,7 +76,7 @@ public class CourierLoginTest extends BaseApiTest {
         courierSteps.loginCourier(LOGIN, "")
                 .then()
                 .log().all()
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для входа"));
     }
 
@@ -97,7 +98,7 @@ public class CourierLoginTest extends BaseApiTest {
         courierSteps.loginCourier(LOGIN, "kukuku")
                 .then()
                 .log().all()
-                .statusCode(404)
+                .statusCode(SC_NOT_FOUND)
                 .body("message", equalTo("Учетная запись не найдена"));
     }
 }

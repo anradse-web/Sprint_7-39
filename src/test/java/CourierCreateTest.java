@@ -1,5 +1,6 @@
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -7,6 +8,9 @@ import pojo.CourierModel;
 import steps.CourierSteps;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static steps.CourierSteps.createCourier;
+import static org.apache.http.HttpStatus.*;
+
+
 
 public class CourierCreateTest extends BaseApiTest {
     public static final String PASSWORD = "1234";
@@ -34,7 +38,7 @@ public class CourierCreateTest extends BaseApiTest {
         createCourier(courier)
                 .then()
                 .log().all()
-                .statusCode(201)
+                .statusCode(SC_CREATED)
                 .body("ok", equalTo(true));
 
     }
@@ -49,7 +53,7 @@ public class CourierCreateTest extends BaseApiTest {
         createCourier(courier)
                 .then()
                 .log().all()
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для создания учетной записи"));
     }
     @Test
@@ -62,8 +66,26 @@ public class CourierCreateTest extends BaseApiTest {
         createCourier(courier)
                 .then()
                 .log().all()
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для создания учетной записи"));
+    }
+    @DisplayName("Создать курьера второй раз с одинаковым логином")
+    @Description("Повторное создание курьера в системе (одни и те же данные): ожидаем ошибку 409 Конфликт")
+    @Test
+    public void createTwice() {
+        // Создаём курьера в первый раз
+        CourierModel courier = new CourierModel(LOGIN, PASSWORD, FIRSTNAME);
+        createCourier(courier)
+                .then()
+                .log().all()
+                .statusCode(SC_CREATED)
+                .body("ok", equalTo(true));
+        // Повторно создаём курьера
+        createCourier(courier)
+                .then()
+                .statusCode(SC_CONFLICT)
+                .assertThat()
+                .body("message", Matchers.equalTo("Этот логин уже используется. Попробуйте другой."));
     }
 }
 
